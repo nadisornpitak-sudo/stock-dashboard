@@ -1,0 +1,23 @@
+# ไม่ push ไฟล์ข้อมูลดิบขึ้น GitHub (ป้องกันข้อมูลบริษัทรั่ว)
+Stock/
+Data Tranform/
+Data lake/
+ใบรับสินค้า/
+*.xlsx
+*.xls
+*.csv
+*.pdf
+~$*
+
+# ไฟล์ที่ไม่จำเป็น
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+Thumbs.db
+
+# push เฉพาะไฟล์เหล่านี้:
+# - stock_dashboard.html  ✅
+# - build_stock_dashboard.py  ✅ (optional)
+# - deploy.bat  ✅
+# - .gitignore  ✅
