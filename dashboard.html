@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Butterfly Thai Perfume — Dashboard เบิก/ขาย</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#1F2A44;--blue:#2E5BFF;--green:#16A34A;--orange:#EA580C;--bg:#F4F6FB;--card:#fff;--line:#E5E9F2;--muted:#667085}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--navy)}
+header{background:var(--navy);color:#fff;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+header h1{font-size:22px;font-weight:700}header h1 span{color:#fff}
+header .sub{font-size:13px;opacity:.75;margin-top:4px}
+.badge{background:var(--blue);color:#fff;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600}
+#monthSel{padding:8px 12px;border-radius:8px;border:none;font-size:14px;font-weight:600;font-family:inherit}
+.container{padding:24px 32px;max-width:1400px;margin:0 auto}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.nav a{text-decoration:none;font-size:13px;font-weight:600;color:#475467;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:8px 14px}
+.nav a.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav a:not(.on):hover{border-color:var(--blue);color:var(--blue)}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.kpi-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:0 1px 3px rgba(16,24,40,.04);border-left:4px solid var(--accent)}
+.kpi-card .label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.kpi-card .value{font-size:28px;font-weight:700;color:var(--accent);line-height:1}
+.kpi-card .sub{font-size:12px;color:var(--muted);margin-top:4px}
+.section-title{font-size:14px;font-weight:700;color:#475467;text-transform:uppercase;letter-spacing:1px;margin:24px 0 16px;display:flex;align-items:center;gap:8px}
+.section-title::after{content:'';flex:1;height:1px;background:var(--line)}
+.charts-row{display:grid;gap:16px;margin-bottom:24px}
+.cols-3{grid-template-columns:1fr 1fr 1fr}.cols-2{grid-template-columns:1.6fr 1fr}.cols-2b{grid-template-columns:1fr 1fr}
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 24px;box-shadow:0 1px 3px rgba(16,24,40,.04)}
+.chart-card h3{font-size:14px;font-weight:600;color:#334155;margin-bottom:16px}
+.chart-wrap{position:relative}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#F1F4FA;color:#475467;font-weight:600;padding:10px 12px;text-align:left;border-bottom:2px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid #f0f0f0}
+.pill{display:inline-block;padding:2px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.pill-blue{background:#EFF4FF;color:#2E5BFF}.pill-green{background:#E7F6EC;color:#15803D}.pill-orange{background:#FEF0E6;color:#C2410C}
+.bar-bg{background:#EEF1F7;border-radius:4px;height:6px;margin-top:4px}.bar-fill{height:6px;border-radius:4px}
+footer{text-align:center;padding:20px;color:var(--muted);font-size:12px}
+@media(max-width:900px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.cols-3,.cols-2,.cols-2b{grid-template-columns:1fr}}
+@media(max-width:600px){
+  header{padding:16px 18px;flex-direction:column;align-items:flex-start;gap:8px}
+  header h1{font-size:18px}
+  .container{padding:16px 14px}
+  .kpi-grid{gap:10px}.kpi-card{padding:14px 16px}.kpi-card .value{font-size:22px}
+  .chart-card{padding:14px 16px;overflow-x:auto}
+}
+</style></head><body>
+<header><div><h1>🦋 <span>Butterfly Thai Perfume</span> — เบิก/ขาย</h1>
+<div class="sub">รายงานการเบิกสินค้าจากคลัง + ยอดขายออนไลน์</div>
+<div class="sub" id="updated"></div></div>
+<div style="display:flex;align-items:center;gap:8px"><span style="font-size:13px;opacity:.8">เลือกเดือน</span><select id="monthSel"></select></div></header>
+<div class="container">
+  <nav class="nav">
+    <a href="stock_dashboard.html">📦 สต็อกคงเหลือ</a>
+    <a href="dashboard.html" class="on">📊 เบิก/ขาย</a>
+    <a href="product_analysis.html">📈 วิเคราะห์สินค้า</a>
+    <a href="scan.html">📷 สแกนสต๊อก</a>
+  </nav>
+  <div class="kpi-grid" id="kpiGrid"></div>
+  <div class="section-title">ภาพรวมการเบิกสินค้าแต่ละช่องทาง</div>
+  <div class="charts-row cols-3">
+    <div class="chart-card"><h3>ยอดเบิกเปรียบเทียบช่องทาง (ชิ้น)</h3><div class="chart-wrap" style="height:220px"><canvas id="channelBar"></canvas></div></div>
+    <div class="chart-card"><h3>สัดส่วนการเบิกแต่ละช่องทาง</h3><div class="chart-wrap" style="height:220px"><canvas id="channelPie"></canvas></div></div>
+    <div class="chart-card"><h3>อัตราการใช้ FC (% เบิกไปแล้ว)</h3>
+      <table><thead><tr><th>ช่องทาง</th><th>FC รวม</th><th>เบิกแล้ว</th><th>% ใช้</th></tr></thead><tbody id="fcRows"></tbody></table></div>
+  </div>
+  <div class="section-title">สินค้าเบิก — มากสุด &amp; รั้งท้าย (ตามยอดเบิกเดือนนี้)</div>
+  <div class="charts-row cols-2b">
+    <div class="chart-card"><h3>📈 TOP 10 เบิกมากสุด</h3><div class="chart-wrap" style="height:300px"><canvas id="topProductsBar"></canvas></div></div>
+    <div class="chart-card"><h3>📉 10 อันดับเบิกน้อยสุด (รั้งท้าย)</h3><div class="chart-wrap" style="height:300px"><canvas id="bottomProductsBar"></canvas></div></div>
+  </div>
+  <div class="charts-row" style="grid-template-columns:1fr">
+    <div class="chart-card"><h3>TOP 5 สินค้าเบิกแยกตามช่องทาง</h3><div id="top5" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px"></div></div>
+  </div>
+  <div class="section-title">ยอดขายแยกแพลตฟอร์ม</div>
+  <div class="charts-row cols-3">
+    <div class="chart-card"><h3>ยอดขายแต่ละแพลตฟอร์ม (฿)</h3><div class="chart-wrap" style="height:230px"><canvas id="pfSales"></canvas></div></div>
+    <div class="chart-card"><h3>จำนวนออเดอร์แต่ละแพลตฟอร์ม</h3><div class="chart-wrap" style="height:230px"><canvas id="pfOrders"></canvas></div></div>
+    <div class="chart-card"><h3>สรุปยอดขายแยกช่องทาง</h3>
+      <table><thead><tr><th>แพลตฟอร์ม</th><th style="text-align:right;">ออเดอร์</th><th style="text-align:right;">ชิ้น</th><th style="text-align:right;">ยอดขาย</th><th style="text-align:right;">สัดส่วน</th></tr></thead><tbody id="pfRows"></tbody></table></div>
+  </div>
+  <div class="section-title">สินค้าขาย — ขายดี &amp; รั้งท้าย (ตามยอดขาย ฿ รวมทุกแพลตฟอร์ม)</div>
+  <div class="charts-row cols-2b">
+    <div class="chart-card"><h3>🏆 TOP 10 ขายดี (ตามยอดเงิน)</h3>
+      <table style="font-size:12px;"><thead><tr><th>#</th><th>สินค้า</th><th style="text-align:right;">ชิ้น</th><th style="text-align:right;">ยอดขาย</th></tr></thead><tbody id="salesTopTbl"></tbody></table></div>
+    <div class="chart-card"><h3>🐌 10 อันดับรั้งท้าย (ยอดขายน้อยสุด)</h3>
+      <table style="font-size:12px;"><thead><tr><th>#</th><th>สินค้า</th><th style="text-align:right;">ชิ้น</th><th style="text-align:right;">ยอดขาย</th></tr></thead><tbody id="salesBotTbl"></tbody></table></div>
+  </div>
+  <div class="section-title">TikTok — รายละเอียด</div>
+  <div class="charts-row cols-3">
+    <div class="chart-card"><h3>TOP สินค้าขายดี (ชิ้น)</h3><div class="chart-wrap" style="height:240px"><canvas id="tiktokTop"></canvas></div></div>
+    <div class="chart-card"><h3>ช่องทางการชำระเงิน (ออเดอร์)</h3><div class="chart-wrap" style="height:240px"><canvas id="tiktokPayment"></canvas></div></div>
+    <div class="chart-card"><h3>Top จังหวัดที่ซื้อมากสุด</h3><div class="chart-wrap" style="height:240px"><canvas id="tiktokProvince"></canvas></div></div>
+  </div>
+  <div class="section-title">หมวดสินค้า (กลุ่ม)</div>
+  <div class="charts-row cols-2b">
+    <div class="chart-card"><h3>ยอดเบิกแยกหมวด — Shop vs Online vs Dealer</h3><div class="chart-wrap" style="height:300px"><canvas id="categoryStacked"></canvas></div></div>
+    <div class="chart-card"><h3>สรุปข้อสังเกต</h3>
+      <div style="display:flex;flex-direction:column;gap:12px;padding-top:4px;" id="notes"></div></div>
+  </div>
+</div>
+<footer>Butterfly Thai Perfume — Warehouse Dashboard | อัปเดตอัตโนมัติจากไฟล์ในโฟลเดอร์</footer>
+<script>
+const D={"generated": "11/06/2026 11:41", "months": [{"key": "2569-05", "label": "พ.ค. 2569", "chanLabels": ["Shop", "Online", "Dealer"], "chanData": [0, 0, 0], "fc": [{"c": "Shop", "fc": 0, "disp": 0, "util": 0, "color": "#16A34A"}, {"c": "Online", "fc": 0, "disp": 0, "util": 0, "color": "#EA580C"}, {"c": "Dealer", "fc": 0, "disp": 0, "util": 0, "color": "#2E5BFF"}], "totalDisp": 0, "totalFC": 0, "topCh": "-", "topChDisp": 0, "topChUtil": 0, "bestName": "", "bestQty": 0, "topLabels": [], "topData": [], "botLabels": [], "botData": [], "top5": {"Shop": [], "Online": [], "Dealer": []}, "catLabels": ["น้ำหอม 2 ML", "น้ำหอม 10 ML", "น้ำหอม 60 ML", "สินค้าปกติ (อื่นๆ)", "ห้ามจำหน่าย (น้ำหอม)", "ห้ามจำหน่าย (อื่นๆ)"], "catShop": [0, 0, 0, 0, 0, 0], "catOnline": [0, 0, 0, 0, 0, 0], "catDealer": [0, 0, 0, 0, 0, 0], "platforms": [{"name": "TikTok", "sales": 478024, "orders": 944, "pieces": 1881}, {"name": "Shopee", "sales": 53826, "orders": 110, "pieces": 226}, {"name": "365", "sales": 37677, "orders": 179, "pieces": 474}], "totalSales": 569527, "totalOrders": 1233, "totalPieces": 2581, "salesTop": [{"n": "Butterfly Thai Perfume - น้ำหอมขนาด 60 ml. EDP (", "q": 154, "v": 160418}, {"n": "Butterfly Thai Perfume - น้ำหอมขนาด 10 ml. EDP (", "q": 386, "v": 101546}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 10 ml", "q": 312, "v": 79943}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 60 ml", "q": 68, "v": 71098}, {"n": "Butterfly Thai Perfume ขนาด 60 ml. (น้ำหอมบัตเตอ", "q": 26, "v": 34317}, {"n": "Butterfly Thai Perfume - Body Oil ขนาด 100 ml.", "q": 41, "v": 20155}, {"n": "Butterfly Thai Perfume ขนาด 10 ml. (น้ำหอมบัตเตอ", "q": 67, "v": 19817}, {"n": "ไม้กฤษณากำยาน", "q": 45, "v": 13371}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 10 ml", "q": 34, "v": 8495}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 60 ml", "q": 7, "v": 7738}], "salesBot": [{"n": "ดอกปีบ", "q": 5, "v": 79}, {"n": "Baby G", "q": 3, "v": 79}, {"n": "ถุงหิ้วกระดาษเเบรนด์  Butterfly Thai Perfume", "q": 5, "v": 118}, {"n": "LIVE 26 May : Butterfly Thai Perfume - น้ำหอมขนา", "q": 1, "v": 199}, {"n": "ข้าวเหนียวมะม่วง", "q": 7, "v": 329}, {"n": "บุหรี่กุหลาบ", "q": 1, "v": 329}, {"n": "Imperial Jade Tea", "q": 1, "v": 329}, {"n": "LIVE : Butterfly Thai Perfume - Room Spray Disco", "q": 1, "v": 374}, {"n": "LIVE : Butterfly Thai Perfume - Agarwood & Benzo", "q": 2, "v": 500}, {"n": "Butterfly Thai Perfume x ZOLAR - น้ำหอมขนาด 10 m", "q": 2, "v": 579}], "tkTopLabels": ["May : โปรโมชั่นแถม (ไม่จำหน่าย) - …", "Butterfly Thai Perfume - น้ำหอมขนา…", "LIVE : Butterfly Thai Perfume - น้…", "May : โปรโมชั่นแถม (ไม่จำหน่าย) - …", "Butterfly Thai Perfume - น้ำหอมขนา…", "LIVE : Butterfly Thai Perfume - น้…", "LIVE : Butterfly Thai Perfume - น้…", "Butterfly Thai Perfume - Body Oil …", "Butterfly Thai Perfume - น้ำหอมขนา…", "Butterfly Thai Perfume - Car Perfu…"], "tkTopData": [556, 386, 312, 221, 154, 68, 34, 32, 31, 18], "tkPayLabels": ["การเก็บเงินปลายทาง", "PayLater", "Mbanking", "PromptPay", "บัตรเครดิต/เดบิต", "TrueMoney"], "tkPayData": [453, 207, 143, 63, 49, 13], "tkProvLabels": ["กรุงเทพฯ", "นนทบุรี", "สมุทรปราการ", "สุราษฎร์ธานี", "ชลบุรี", "สงขลา"], "tkProvData": [213, 46, 39, 39, 37, 28]}, {"key": "2569-06", "label": "มิ.ย. 2569", "chanLabels": ["Shop", "Online", "Dealer"], "chanData": [15781, 17870, 2770], "fc": [{"c": "Shop", "fc": 60250, "disp": 15781, "util": 26.2, "color": "#16A34A"}, {"c": "Online", "fc": 62560, "disp": 17870, "util": 28.6, "color": "#EA580C"}, {"c": "Dealer", "fc": 20660, "disp": 2770, "util": 13.4, "color": "#2E5BFF"}], "totalDisp": 36421, "totalFC": 143470, "topCh": "Online", "topChDisp": 17870, "topChUtil": 29, "bestName": "Body oil Kali Girl 5 ML.", "bestQty": 6950, "topLabels": ["Body oil Kali Girl 5 ML. (ห้าม", "EDP 10 ML. กลิ่น Agawood & Ben", "EDP 60 ML. กลิ่น Agarwood & Be", "EDP 2 ML. กลิ่น Smile (ห้ามจำห", "EDP 10 ML. กลิ่น Cave Lily & P", "EDP 10 ML. กลิ่น KALI GIRL", "EDP 10 ML. กลิ่น Kali Girl Awa", "EDP 10 ML. กลิ่น Mango Sticky ", "EDP 60 ML. กลิ่น Cave Lily & P", "BODY OIL  50 ML. กลิ่น Agarwoo"], "topData": [6950, 2831, 2027, 1679, 1000, 915, 681, 549, 530, 488], "botLabels": ["EDP 60 ML. กลิ่น PATCHOULI & O", "EDP 60 ML. กลิ่น Fried Basil-ผ", "EDP 60 ML. กลิ่น Sicilian wate", "EDP 60 ML. กลิ่น La Lune et mo", "EDP 60 ML. กลิ่น Essence of Sa", "EDP 2 ML. กลิ่น Essence of Sav", "EDP 60 ML. กลิ่น Pomelo serein", "EDP 10 ML. กลิ่น Golden mango", "EDP 10 ML. กลิ่น Fried Basil- ", "SET Gift 3 ml. (Agarwood,Cave "], "botData": [1, 2, 2, 2, 2, 3, 3, 4, 5, 5], "top5": {"Shop": [["Body oil Kali Girl 5 ML. (ห้ามจำหน", 4400], ["EDP 10 ML. กลิ่น Agawood & Benzoin", 1210], ["EDP 60 ML. กลิ่น Agarwood & Benzoi", 809], ["EDP 10 ML. กลิ่น Cave Lily & Pear ", 480], ["EDP 10 ML. กลิ่น Mango Sticky Rice", 453]], "Online": [["Body oil Kali Girl 5 ML. (ห้ามจำหน", 1988], ["EDP 10 ML. กลิ่น Agawood & Benzoin", 1401], ["EDP 2 ML. กลิ่น Smile (ห้ามจำหน่าย", 1379], ["EDP 60 ML. กลิ่น Agarwood & Benzoi", 1164], ["EDP 10 ML. กลิ่น KALI GIRL", 695]], "Dealer": [["Body oil Kali Girl 5 ML. (ห้ามจำหน", 562], ["BODY OIL  50 ML. กลิ่น Agarwood & ", 482], ["EDP 10 ML. กลิ่น Agawood & Benzoin", 220], ["EDP 10 ML. กลิ่น Cave Lily & Pear ", 140], ["EDP 2 ML. กลิ่น Agarwood & Benzoin", 100]]}, "catLabels": ["น้ำหอม 2 ML", "น้ำหอม 10 ML", "น้ำหอม 60 ML", "สินค้าปกติ (อื่นๆ)", "ห้ามจำหน่าย (น้ำหอม)", "ห้ามจำหน่าย (อื่นๆ)"], "catShop": [0, 6125, 3188, 1328, 330, 4810], "catOnline": [884, 7119, 3762, 2219, 1885, 2001], "catDealer": [320, 900, 467, 39, 0, 1044], "platforms": [{"name": "TikTok", "sales": 838412, "orders": 1508, "pieces": 3171}, {"name": "Lazada", "sales": 235634, "orders": 152, "pieces": 703}, {"name": "365", "sales": 9539, "orders": 59, "pieces": 156}], "totalSales": 1083585, "totalOrders": 1719, "totalPieces": 4030, "salesTop": [{"n": "Butterfly Thai Perfume - น้ำหอมขนาด 60 ml. EDP (", "q": 268, "v": 274758}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 60 ml", "q": 150, "v": 148770}, {"n": "Butterfly Thai Perfume - น้ำหอมขนาด 10 ml. EDP (", "q": 482, "v": 124645}, {"n": "Butterfly Thai Perfume - Butterfly Thai Perfume,", "q": 129, "v": 118234}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 10 ml", "q": 457, "v": 114358}, {"n": "Butterfly Thai Perfume - น้ำหอมบัตเตอร์ฟลาย ไทย ", "q": 69, "v": 62519}, {"n": "Butterfly Reserve Collection - น้ำหอมขนาด 60 ml.", "q": 23, "v": 33258}, {"n": "LIVE : Butterfly Thai Perfume - น้ำหอมขนาด 60 ml", "q": 28, "v": 28030}, {"n": "Butterfly Thai Perfume - Butterfly Thai Perfume,", "q": 101, "v": 22089}, {"n": "Butterfly Thai Perfume - Body Oil ขนาด 100 ml.", "q": 47, "v": 21857}], "salesBot": [{"n": "Butterfly Thai Perfume - Perfume Size 2 ML.", "q": 2, "v": 159}, {"n": "LIVE : Butterfly Thai Perfume - Agarwood & Benzo", "q": 1, "v": 240}, {"n": "Butterfly Thai Perfume - Hand Cream ขนาด 50ml.", "q": 1, "v": 260}, {"n": "Butterfly Thai Perfume - Room Spray รูมสเปรย์ขนา", "q": 1, "v": 312}, {"n": "Butterfly Thai Perfume - Hair & Body Mist Size 1", "q": 1, "v": 319}, {"n": "บัวหลวง", "q": 1, "v": 329}, {"n": "วนิลา", "q": 1, "v": 329}, {"n": "มะกรูดกานพลู", "q": 2, "v": 329}, {"n": "Butterfly Thai Perfume - น้ำหอมขนาด 10 ml. กลิ่น", "q": 2, "v": 503}, {"n": "Ivory Wood", "q": 1, "v": 590}], "tkTopLabels": ["Jun : โปรโมชั่นแถม (ไม่จำหน่าย) - …", "Butterfly Thai Perfume - น้ำหอมขนา…", "LIVE : Butterfly Thai Perfume - น้…", "Jun : โปรโมชั่นแถม (ไม่จำหน่าย) - …", "Butterfly Thai Perfume - น้ำหอมขนา…", "LIVE : Butterfly Thai Perfume - น้…", "LIVE 5(2ทุ่ม)-6 Jun : โปรโมชั่นแถม…", "LIVE : Butterfly Thai Perfume - น้…", "LIVE : Butterfly Thai Perfume - Bo…", "Butterfly Thai Perfume - น้ำหอมขนา…"], "tkTopData": [919, 482, 457, 385, 268, 150, 102, 50, 43, 43], "tkPayLabels": ["การเก็บเงินปลายทาง", "PayLater", "Mbanking", "PromptPay", "บัตรเครดิต/เดบิต", "TrueMoney"], "tkPayData": [596, 411, 243, 124, 80, 21], "tkProvLabels": ["กรุงเทพฯ", "ชลบุรี", "สมุทรปราการ", "นนทบุรี", "สุราษฎร์ธานี", "สงขลา"], "tkProvData": [378, 77, 73, 58, 50, 49]}], "defaultKey": "2569-06"};
+const C={shop:'#16A34A',online:'#EA580C',dealer:'#2E5BFF'};
+const chColors=[C.shop,C.online,C.dealer];
+const light=['#4285f4','#34a853','#fbbc04','#e94560','#9334e6','#00acc1','#ff7043','#78909c','#66bb6a','#ab47bc'];
+const pfColors=['#e94560','#9334e6','#fb8c00','#0f3460','#00acc1','#34a853'];
+const nf=n=>Number(n||0).toLocaleString('en-US');
+const charts={};
+function mk(id,cfg){try{if(charts[id])charts[id].destroy();var el=document.getElementById(id);if(el)charts[id]=new Chart(el,cfg);}catch(e){console.error('chart '+id,e);}}
+let M=null;
+const sel=document.getElementById('monthSel');
+sel.innerHTML=D.months.map(m=>`<option value="${m.key}">${m.label}</option>`).join('');
+sel.value=D.defaultKey;
+sel.onchange=()=>{M=D.months.find(x=>x.key===sel.value);render();};
+{const e=document.getElementById('updated');if(e)e.textContent=`🕒 อัปเดตล่าสุด: ${D.generated}`;}
+
+function render(){
+  // KPIs
+  document.getElementById('kpiGrid').innerHTML=[
+   ['#2E5BFF','ยอดเบิกรวม (ทุกช่องทาง)',nf(M.totalDisp),`จาก FC รวม ${nf(M.totalFC)} ชิ้น`],
+   ['#16A34A','ยอดขายออนไลน์รวม (ทุกแพลตฟอร์ม)','฿'+nf(M.totalSales),`${nf(M.totalOrders)} ออเดอร์ · ${M.platforms.length} แพลตฟอร์ม`],
+   ['#9333EA','ช่องทางเบิกสูงสุด',M.topCh,`${nf(M.topChDisp)} ชิ้น (${M.topChUtil}% ของ FC)`],
+   ['#EA580C','สินค้าเบิกมากสุด',`<span style="font-size:15px">${M.bestName||'-'}</span>`,`${nf(M.bestQty)} ชิ้น`]
+  ].map(([a,l,v,s])=>`<div class="kpi-card" style="--accent:${a}"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join('');
+  // FC table
+  const totU=M.totalFC?(M.totalDisp/M.totalFC*100):0;
+  document.getElementById('fcRows').innerHTML=M.fc.map(f=>`<tr><td><span class="pill ${f.c==='Shop'?'pill-green':f.c==='Online'?'pill-orange':'pill-blue'}">${f.c}</span></td><td>${nf(f.fc)}</td><td>${nf(f.disp)}</td><td><div style="font-weight:700;color:${f.color}">${f.util}%</div><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(f.util,100)}%;background:${f.color}"></div></div></td></tr>`).join('')
+   +`<tr style="background:#f7f8fa;font-weight:600"><td>รวม</td><td>${nf(M.totalFC)}</td><td>${nf(M.totalDisp)}</td><td><div style="font-weight:700;color:#555">${totU.toFixed(1)}%</div><div class="bar-bg"><div class="bar-fill" style="width:${Math.min(totU,100)}%;background:#888"></div></div></td></tr>`;
+  // charts เบิก
+  mk('channelBar',{type:'bar',data:{labels:M.chanLabels,datasets:[{data:M.chanData,backgroundColor:chColors,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+  mk('channelPie',{type:'doughnut',data:{labels:M.chanLabels,datasets:[{data:M.chanData,backgroundColor:chColors,borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'62%',plugins:{legend:{position:'bottom'}}}});
+  mk('topProductsBar',{type:'bar',data:{labels:M.topLabels,datasets:[{data:M.topData,backgroundColor:'#16A34A',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:11}}}}}});
+  mk('bottomProductsBar',{type:'bar',data:{labels:M.botLabels,datasets:[{data:M.botData,backgroundColor:'#DC2626',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:11}}}}}});
+  // top5 per channel
+  document.getElementById('top5').innerHTML=M.chanLabels.map(c=>{
+    const col=c==='Shop'?C.shop:c==='Online'?C.online:C.dealer;
+    const rows=(M.top5[c]||[]).map(([n,v])=>`<tr><td style="color:#666">${n}</td><td style="text-align:right;font-weight:700">${nf(v)}</td></tr>`).join('')||'<tr><td style="color:#aaa">— ไม่มีข้อมูล —</td></tr>';
+    return `<div><div style="font-size:12px;font-weight:700;color:${col};margin-bottom:6px">${c}</div><table style="font-size:12px">${rows}</table></div>`;
+  }).join('');
+  // platforms
+  mk('pfSales',{type:'bar',data:{labels:M.platforms.map(p=>p.name),datasets:[{data:M.platforms.map(p=>p.sales),backgroundColor:pfColors,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ฿'+ctx.parsed.y.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'฿'+(v/1000)+'k'}}}}});
+  mk('pfOrders',{type:'bar',data:{labels:M.platforms.map(p=>p.name),datasets:[{data:M.platforms.map(p=>p.orders),backgroundColor:pfColors,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+  const tsales=M.totalSales||1;
+  document.getElementById('pfRows').innerHTML=M.platforms.map(p=>`<tr><td style="font-weight:600">${p.name}</td><td style="text-align:right">${nf(p.orders)}</td><td style="text-align:right">${nf(p.pieces)}</td><td style="text-align:right;font-weight:700">฿${nf(p.sales)}</td><td style="text-align:right;color:#888">${(p.sales/tsales*100).toFixed(1)}%</td></tr>`).join('')
+   +`<tr style="background:#f7f8fa;font-weight:700"><td>รวม</td><td style="text-align:right">${nf(M.totalOrders)}</td><td style="text-align:right">${nf(M.totalPieces)}</td><td style="text-align:right">฿${nf(M.totalSales)}</td><td></td></tr>`;
+  // sales top/bottom
+  const salesRow=(r,i)=>`<tr><td>${i+1}</td><td style="color:#444">${r.n}</td><td style="text-align:right">${nf(r.q)}</td><td style="text-align:right;font-weight:700">฿${nf(r.v)}</td></tr>`;
+  document.getElementById('salesTopTbl').innerHTML=M.salesTop.map(salesRow).join('')||'<tr><td colspan="4" style="color:#aaa">— ไม่มีข้อมูล —</td></tr>';
+  document.getElementById('salesBotTbl').innerHTML=M.salesBot.map(salesRow).join('')||'<tr><td colspan="4" style="color:#aaa">— ไม่มีข้อมูล —</td></tr>';
+  // tiktok detail
+  mk('tiktokTop',{type:'bar',data:{labels:M.tkTopLabels,datasets:[{data:M.tkTopData,backgroundColor:'#e94560',borderRadius:4}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{font:{size:10}}}}}});
+  mk('tiktokPayment',{type:'doughnut',data:{labels:M.tkPayLabels,datasets:[{data:M.tkPayData,backgroundColor:['#4285f4','#34a853','#fbbc04','#e94560','#9334e6','#00acc1'],borderWidth:2,borderColor:'#fff'}]},options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+  mk('tiktokProvince',{type:'bar',data:{labels:M.tkProvLabels,datasets:[{data:M.tkProvData,backgroundColor:'#1F2A44',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:11}}}}}});
+  // category stacked
+  mk('categoryStacked',{type:'bar',data:{labels:M.catLabels,datasets:[{label:'Shop',data:M.catShop,backgroundColor:C.shop,stack:'a',borderRadius:3},{label:'Online',data:M.catOnline,backgroundColor:C.online,stack:'a',borderRadius:3},{label:'Dealer',data:M.catDealer,backgroundColor:C.dealer,stack:'a',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}},scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:v=>v.toLocaleString()}}}}});
+  // notes
+  const pct=(M.totalDisp?(M.topData[0]/M.totalDisp*100):0)||0;
+  const bestPf=M.platforms[0];
+  const notes=[
+   ['#e8f0fe','#1967d2',`สินค้าเบิกอันดับ 1: ${M.topLabels[0]||'-'}`,`${nf(M.topData[0]||0)} ชิ้น (${pct.toFixed(1)}% ของยอดเบิก)`],
+   ['#e6f4ea','#137333','ช่องทางเบิกสูงสุด',`${M.topCh} — ${nf(M.topChDisp)} ชิ้น`],
+   ['#fff8e1','#e37400','แพลตฟอร์มขายดีสุด',bestPf?`${bestPf.name} — ฿${nf(bestPf.sales)}`:'— ไม่มีข้อมูลขาย —'],
+   ['#fce8e6','#c5221f','สินค้าขายดี (ยอดเงิน)',M.salesTop[0]?`${M.salesTop[0].n} — ฿${nf(M.salesTop[0].v)}`:'— ไม่มีข้อมูล —']];
+  document.getElementById('notes').innerHTML=notes.map(([bg,fg,t,s])=>`<div style="padding:12px;background:${bg};border-radius:8px;border-left:3px solid ${fg}"><div style="font-size:12px;font-weight:700;color:${fg}">${t}</div><div style="font-size:12px;color:#555;margin-top:4px">${s}</div></div>`).join('');
+}
+M=D.months.find(x=>x.key===D.defaultKey)||D.months[0];
+render();
+</script></body></html>
