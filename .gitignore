@@ -9,6 +9,18 @@ Data lake/
 *.pdf
 ~$*
 
+# โฟลเดอร์ภายใน ห้าม push (สคริปต์/ข้อมูล/สำรอง)
+Apps/
+Assets/
+Backup/
+Code/
+Data/
+Warehouse BTP/
+.claude/
+CLAUDE.md
+คู่มือ/
+*.command
+
 # ไฟล์ที่ไม่จำเป็น
 __pycache__/
 *.pyc
@@ -16,8 +28,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
-# push เฉพาะไฟล์เหล่านี้:
+# push เฉพาะไฟล์เหล่านี้ (deploy.bat copy scan.html มาที่ root ให้เอง):
 # - stock_dashboard.html  ✅
-# - build_stock_dashboard.py  ✅ (optional)
-# - deploy.bat  ✅
+# - dashboard.html  ✅
+# - product_analysis.html  ✅
+# - scan.html  ✅
 # - .gitignore  ✅
