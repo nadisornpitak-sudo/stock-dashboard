@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>สแกนสต๊อก BTP</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@300;400;500&family=Prompt:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary:      #004D3C; /* Forest Green */
+  --secondary:    #EEEBE1; /* Warm Sand/Beige */
+  --tertiary:     #C5A059; /* Brass Gold */
+  --bg:           #FCFBF9; /* Soft Off-White */
+  --surface:      #FFFFFF;
+  --border:       #E4E2D9;
+  --text:         #1C1E21; /* Charcoal */
+  --muted:        #767676;
+  --success:      #197A58;
+  --error:        #B92C28;
+
+  --display-font: 'Cormorant Garamond', serif;
+  --body-font:    'Prompt', sans-serif;
+  --mono-font:    'DM Mono', monospace;
+}
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--body-font);
+}
+body {
+  background: var(--bg);
+  color: var(--text);
+  padding-bottom: 90px;
+}
+.hd {
+  background: var(--primary);
+  color: #fff;
+  padding: 14px 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid var(--tertiary);
+}
+.hd h1 {
+  font-family: var(--display-font);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+.wrap {
+  padding: 10px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.nav {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.nav a {
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 7px 14px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.3s;
+}
+.nav a.on {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.01);
+}
+.modes {
+  display: flex;
+  gap: 8px;
+}
+.modes button {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-family: var(--body-font);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.modes button.in.on {
+  background: rgba(25, 122, 88, 0.08);
+  border-color: var(--success);
+  color: var(--success);
+  font-weight: 600;
+}
+.modes button.out.on {
+  background: rgba(185, 44, 40, 0.08);
+  border-color: var(--error);
+  color: var(--error);
+  font-weight: 600;
+}
+.row {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+.row label {
+  font-family: var(--mono-font);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+select, input[type=date] {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #FAF9F6;
+  font-size: 14px;
+  color: var(--text);
+  outline: none;
+}
+select:focus, input[type=date]:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+#reader {
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.btn {
+  width: 100%;
+  padding: 12px;
+  border: 0;
+  border-radius: 4px;
+  font-family: var(--body-font);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--primary);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+.btn.stop {
+  background: var(--muted);
+}
+.manual {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+.manual input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #FAF9F6;
+  font-size: 14px;
+  outline: none;
+}
+.manual input:focus {
+  border-color: var(--primary);
+  background: var(--surface);
+}
+.manual button {
+  padding: 10px 16px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background: var(--primary);
+  color: #fff;
+  font-family: var(--body-font);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  min-height: 40px;
+  transition: all 0.3s;
+}
+.manual button:hover {
+  background-color: #00362a;
+}
+.last {
+  margin-top: 8px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 13px;
+  display: none;
+  border: 1px solid transparent;
+}
+.last.ok {
+  display: block;
+  background: rgba(25, 122, 88, 0.08);
+  color: var(--success);
+  border-color: rgba(25, 122, 88, 0.2);
+}
+.last.bad {
+  display: block;
+  background: rgba(185, 44, 40, 0.08);
+  color: var(--error);
+  border-color: rgba(185, 44, 40, 0.2);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+th {
+  text-align: left;
+  color: var(--muted);
+  border-bottom: 2px solid var(--border);
+  padding: 8px 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+td {
+  border-bottom: 1px solid var(--border);
+  padding: 8px 4px;
+  vertical-align: middle;
+}
+td small {
+  font-family: var(--mono-font);
+  color: var(--muted);
+}
+.qty {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.qty button {
+  width: 38px;
+  height: 38px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--surface);
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--text);
+  transition: all 0.2s;
+}
+.qty button:hover {
+  background: var(--secondary);
+}
+.qty input {
+  width: 50px;
+  text-align: center;
+  padding: 8px 2px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #FAF9F6;
+  font-family: var(--mono-font);
+  font-size: 15px;
+  color: var(--text);
+}
+.del {
+  background: none;
+  border: 0;
+  color: var(--error);
+  font-size: 18px;
+  width: 38px;
+  height: 38px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.del:hover {
+  color: #ff0000;
+}
+.warnsku {
+  color: var(--error);
+  font-size: 11px;
+  font-weight: 500;
+}
+.bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  gap: 8px;
+  max-width: 100%;
+  box-shadow: 0 -4px 12px rgba(0,0,0,0.03);
+}
+.bar .sum {
+  flex: 1;
+  font-family: var(--mono-font);
+  font-size: 13px;
+  font-weight: 500;
+  align-self: center;
+}
+.bar button {
+  padding: 10px 16px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-family: var(--body-font);
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+#clr {
+  background: var(--secondary);
+  color: var(--text);
+  border-color: var(--border);
+}
+#clr:hover {
+  background: #e3decb;
+}
+#exp {
+  background: var(--primary);
+  color: #fff;
+}
+#exp:hover {
+  background: #00362a;
+}
+</style>
+</head>
+<body>
+<div class="hd"><h1>📦 สแกนสต๊อก BTP</h1><span id="cnt" style="font-size:13px"></span></div>
+<div class="wrap">
+<nav class="nav">
+  <a href="stock_dashboard.html">📦 สต็อก</a>
+  <a href="dashboard.html">📊 เบิก/ขาย</a>
+  <a href="product_analysis.html">📈 วิเคราะห์</a>
+  <a href="scan.html" class="on">📷 สแกน</a>
+</nav>
+<div class="card">
+  <div class="modes">
+    <button class="in on" id="mIn" onclick="setMode('in')">📥 รับเข้า</button>
+    <button class="out" id="mOut" onclick="setMode('out')">📤 เบิกออก</button>
+  </div>
+  <div class="row" id="chRow" style="display:none">
+    <label>ช่องทาง</label>
+    <select id="ch"><option>Shop</option><option>Online</option><option>Dealer</option></select>
+  </div>
+  <div class="row"><label>วันที่</label><input type="date" id="dt"></div>
+</div>
+<div class="card">
+  <div id="reader"></div>
+  <button class="btn" id="cam" onclick="toggleCam()">📷 เปิดกล้องสแกน</button>
+  <div class="manual">
+    <input id="mb" inputmode="numeric" placeholder="หรือพิมพ์บาร์โค้ด / SKU แล้วกดเพิ่ม">
+    <button onclick="manualAdd()">เพิ่ม</button>
+  </div>
+  <div class="last" id="last"></div>
+</div>
+<div class="card">
+  <table><thead><tr><th>สินค้า</th><th style="width:152px">จำนวน</th><th style="width:44px"></th></tr></thead>
+  <tbody id="tb"></tbody></table>
+</div>
+</div>
+<div class="bar">
+  <div class="sum" id="sum"></div>
+  <button id="clr" onclick="clearAll()">ล้าง</button>
+  <button id="exp" onclick="exportCSV()">⬇ Export CSV</button>
+</div>
+<script>
+const MAP = {"8859757900017": ["FG0101-001", "EDP 2 ML. กลิ่น ไม้กฤษณากำยาน"], "8859757900031": ["FG0101-003", "EDP 2 ML. กลิ่น บัวหลวง"], "8859757900048": ["FG0101-004", "EDP 2 ML. กลิ่น ดอกปีบ"], "8859757900093": ["FG0101-010", "EDP 2 ML. กลิ่น พลับพลึงแพร์"], "8859757900451": ["FG0101-043", "EDP 2 ML. กลิ่น Pomelo serein (Resereve)"], "8859757900468": ["FG0101-044", "EDP 2 ML. กลิ่น Luscious rose (Resereve)"], "8859757900482": ["FG0101-046", "EDP 2 ML. กลิ่น Sicilian water (Resereve)"], "8859757900499": ["FG0101-047", "EDP 2 ML. กลิ่น Girlish (Resereve)"], "8859757900536": ["FG0101-051", "EDP 2 ML. กลิ่น Tom collins (Resereve)"], "8859757900543": ["FG0101-052", "EDP 2 ML. กลิ่น La lune et moi (Resereve)"], "8859757900550": ["FG0101-053", "EDP 2 ML. กลิ่น Le Soleil et toi (Resereve)"], "8859757900567": ["FG0101-090", "EDP 2 ML. กลิ่น Velvet Noir (Resereve)"], "8859757900574": ["FG0101-091", "EDP 2 ML. กลิ่น Velvet Blanc (Resereve)"], "8859757900581": ["FG0102-001", "EDP 10 ML. กลิ่น Agawood & Benzoin ไม้กฤษณากำยาน"], "8859757900598": ["FG0102-002", "EDP 10 ML. กลิ่น ควันไม้กฤษณา"], "8859757900604": ["FG0102-003", "EDP 10 ML. กลิ่น บัวหลวง"], "8859757900611": ["FG0102-004", "EDP 10 ML. กลิ่น ดอกปีบ"], "8859757900635": ["FG0102-007", "EDP 10 ML. กลิ่น Damask Rose-กุหลาบมอญ"], "8859757900642": ["FG0102-008", "EDP 10 ML. กลิ่น Vetiver Rose-แฝกหอมกุหลาบ"], "8859757900659": ["FG0102-009", "EDP 10 ML. กลิ่น Tobacco Rose-บุหรี่กุหลาบ"], "8859757900666": ["FG0102-010", "EDP 10 ML. กลิ่น Cave Lily & Pear -พลับพลึงแพร์"], "8859757900673": ["FG0102-011", "EDP 10 ML. กลิ่น Mango Leaf-ใบมะม่วง"], "8859757900680": ["FG0102-012", "EDP 10 ML. กลิ่น Cherry & Saffron-เชอรี่หญ้าฝรั่น"], "8859757900697": ["FG0102-013", "EDP 10 ML. กลิ่น Bergamot & Clove Bud-มะกรูดกานพลู"], "8859757900703": ["FG0102-014", "EDP 10 ML. กลิ่น Pomelo-ส้มโอ"], "8859757900710": ["FG0102-015", "EDP 10 ML. กลิ่น Sweet Tea-ชามะตูม"], "8859757900727": ["FG0102-016", "EDP 10 ML. กลิ่น Mango Sticky Rice-ข้าวเหนียวมะม่วง"], "8859757900734": ["FG0102-017", "EDP 10 ML. กลิ่น Vanilla-วนิลา"], "8859757900741": ["FG0102-018", "EDP 10 ML. กลิ่น Galanga-ข่า"], "8859757900758": ["FG0102-019", "EDP 10 ML. กลิ่น Moss & Pepper-โคลนสาบควาย"], "8859757900765": ["FG0102-020", "EDP 10 ML. กลิ่น Bay Leaf-ใบกระวาน"], "8859757900772": ["FG0102-021", "EDP 10 ML. กลิ่น Jasmime Garland -พวงมาลัย"], "8859757900789": ["FG0102-022", "EDP 10 ML. กลิ่น Wan Sao Long-ว่านสาวหลง"], "8859757900796": ["FG0102-023", "EDP 10 ML. กลิ่น Sweet Sedge-ว่านเสน่ห์จันทร์หอม"], "8859757900802": ["FG0102-024", "EDP 10 ML. กลิ่น Cotton Candy-สายไหม"], "8859757900819": ["FG0102-025", "EDP 10 ML. กลิ่น Golden Mandarin-ส้มสีทอง"], "8859757900826": ["FG0102-026", "EDP 10 ML. กลิ่น Fried Basil- ผัดกะเพรา"], "8859757900833": ["FG0102-027", "EDP 10 ML. กลิ่น Golden Apple-ลูกจันทร์"], "8859757900840": ["FG0102-028", "EDP 10 ML. กลิ่น Samet Island -เกาะเสม็ด"], "8859757900871": ["FG0102-034", "EDP 10 ML. กลิ่น  Auspicious Fruit-ผลไม้มงคล"], "8859757900888": ["FG0102-036", "EDP 10 ML. กลิ่น Golden mango"], "8859757900895": ["FG0102-037", "EDP 10 ML. กลิ่น Warm & Cozy"], "8859757900901": ["FG0102-038", "EDP 10 ML. กลิ่น Full moon party"], "8859757900925": ["FG0102-040", "EDP 10 ML. กลิ่น Wood of god"], "8859757900932": ["FG0102-041", "EDP 10 ML. กลิ่น Jasmine angel"], "8859757900949": ["FG0102-042", "EDP 10 ML. กลิ่น Lust in bed"], "8859757900994": ["FG0106-001", "EDP 60 ML. กลิ่น Agarwood & Benzoin-ไม้กฤษณากำยาน"], "8859757901007": ["FG0106-002", "EDP 60 ML. กลิ่น Smoked Agarwood-ควันไม้กฤษณา"], "8859757901014": ["FG0106-003", "EDP 60 ML. กลิ่น Lotus Blossom-บัวหลวง"], "8859757901021": ["FG0106-004", "EDP 60 ML. กลิ่น Cork Tree Blossom-ดอกปีบ"], "8859757901052": ["FG0106-007", "EDP 60 ML. กลิ่น Damask Rose-กุหลาบมอญ"], "8859757901069": ["FG0106-008", "EDP 60 ML. กลิ่น Vitiver Rose-แฝกหอมกุหลาบ"], "8859757901076": ["FG0106-009", "EDP 60 ML. กลิ่น Tobacco Rose-บุหรี่กุหลาบ"], "8859757901083": ["FG0106-010", "EDP 60 ML. กลิ่น Cave Lily & Pear-พลับพลึงแพร์"], "8859757901090": ["FG0106-011", "EDP 60 ML. กลิ่น Mango Leaf-ใบมะม่วง"], "8859757901106": ["FG0106-012", "EDP 60 ML. กลิ่น Cherry & Saffron-เชอรี่หญ้าฝรั่น"], "8859757901113": ["FG0106-013", "EDP 60 ML. กลิ่น Bergamot & Clove Bud-มะกรูดกานพลู"], "8859757901120": ["FG0106-014", "EDP 60 ML. กลิ่น Pomelo-ส้มโอ"], "8859757901137": ["FG0106-015", "EDP 60 ML. กลิ่น Sweet Tea-ชามะตูม"], "8859757901144": ["FG0106-016", "EDP 60 ML. กลิ่น Mango Sticky Rice-ข้าวเหนียวมะม่วง"], "8859757901151": ["FG0106-017", "EDP 60 ML. กลิ่น Vanilla-วนิลา"], "8859757901168": ["FG0106-018", "EDP 60 ML. กลิ่น Galanga-ข่า"], "8859757901175": ["FG0106-019", "EDP 60 ML. กลิ่น Moss & Pepper-โคลนสาบควาย"], "8859757901182": ["FG0106-020", "EDP 60 ML. กลิ่น Bay Leaf-ใบกระวาน"], "8859757901199": ["FG0106-021", "EDP 60 ML. กลิ่น Jasmine Garland-พวงมาลัย"], "8859757901205": ["FG0106-022", "EDP 60 ML. กลิ่น Wan Sao Long-ว่านสาวหลง"], "8859757901212": ["FG0106-023", "EDP 60 ML. กลิ่น Sweet Sedge-ว่านเสน่ห์จันทร์หอม"], "8859757901229": ["FG0106-024", "EDP 60 ML. กลิ่น Cotton Candy-สายไหม"], "8859757901236": ["FG0106-025", "EDP 60 ML. กลิ่น Golden Mandarin-ส้มสีทอง"], "8859757901243": ["FG0106-026", "EDP 60 ML. กลิ่น Fried Basil-ผัดกะเพรา"], "8859757901250": ["FG0106-027", "EDP 60 ML. กลิ่น Golden Apple-ลูกจันทร์"], "8859757901267": ["FG0106-028", "EDP 60 ML. กลิ่น Samet Island-เกาะเสม็ด"], "8859757901281": ["FG0106-030", "EDP 60 ML. กลิ่น Petrichor-ฝนแรก"], "8859757901298": ["FG0106-031", "EDP 60 ML. กลิ่น Oud Incense-ไม้กฤษณาคีนัม"], "8859757901304": ["FG0106-034", "EDP 60 ML. กลิ่น Auspicious Fruit-ผลไม้มงคล"], "8859757901311": ["FG0106-036", "EDP 60 ML. กลิ่น Golden mango"], "8859757901328": ["FG0106-037", "EDP 60 ML. กลิ่น Warm & Cozy"], "8859757901335": ["FG0106-038", "EDP 60 ML. กลิ่น Full moon party"], "8859757901342": ["FG0106-039", "EDP 60 ML. กลิ่น Home sweet home"], "8859757901359": ["FG0106-040", "EDP 60 ML. กลิ่น Wood of god"], "8859757901366": ["FG0106-041", "EDP 60 ML. กลิ่น Jasmine angel"], "8859757901373": ["FG0106-042", "EDP 60 ML. กลิ่น Lust in bed"], "8859757901380": ["FG0106-043", "EDP 60 ML. กลิ่น Pomelo serein (Resereve)"], "8859757901397": ["FG0106-044", "EDP 60 ML. กลิ่น Luscious rose (Resereve)"], "8859757901403": ["FG0106-045", "EDP 60 ML. กลิ่น Ivory wood (Resereve)"], "8859757901410": ["FG0106-046", "EDP 60 ML. กลิ่น Cisilian water (Resereve)"], "8859757901427": ["FG0106-047", "EDP 60 ML. กลิ่น Girlish (Resereve)"], "8859757901434": ["FG0106-048", "EDP 60 ML. กลิ่น Gentiloumo (Resereve)"], "8859757901441": ["FG0106-049", "EDP 60 ML. กลิ่น Aphrodisiac (Resereve)"], "8859757901458": ["FG0106-050", "EDP 60 ML. กลิ่น Aloha (Resereve)"], "8859757901465": ["FG0106-051", "EDP 60 ML. กลิ่น Tom collins (Resereve)"], "8859757901472": ["FG0106-052", "EDP 60 ML. กลิ่น La Lune et moi (Resereve)"], "8859757901489": ["FG0106-053", "EDP 60 ML. กลิ่น Le Soleil et toi (Resereve)"], "8859757901496": ["FG0106-071", "EDP 60 ML. กลิ่น Phraaphaimani (Resereve)"], "8859757901502": ["FG0106-072", "EDP 60 ML. กลิ่น Venus(Resereve)"], "8859757901519": ["FG0106-090", "EDP 60 ML. กลิ่น Velvet Noir (Resereve)"], "8859757901526": ["FG0106-091", "EDP 60 ML. กลิ่น Velvet Blanc (Resereve)"], "8859757901557": ["FG0106-095", "EDP 60 ML. กลิ่น Trimurti Shrine (พระตรีมูรติ)"], "8859757901564": ["FG0106-096", "EDP 60 ML. กลิ่น Jatulokabal Shrine (ท้าวจตุโลกบาล)"], "8859757901571": ["FG0106-097", "EDP 60 ML. กลิ่น Lakshmi Shrine (พระแม่ลักษมี)"], "8859757901588": ["FG0106-098", "EDP 60 ML. กลิ่น Umathevi Shrine (พระอุมาเทวี)"], "8859757901595": ["FG0106-099", "EDP 60 ML. กลิ่น Ganesh Shrine (พระคณปติ)"], "8859757901601": ["FG0106-100", "EDP 60 ML. กลิ่น Erawan Shrine (ท้าวมหาพรหม)"], "8859757901632": ["FG0208-001", "DIFFUSER 150 ML. กลิ่น ไม้กฤษณากำยาน"], "8859757901649": ["FG0208-003", "DIFFUSER 150 ML. กลิ่น บัวหลวง"], "8859757901663": ["FG0208-014", "DIFFUSER 150 ML. กลิ่น ส้มโอ"], "8859757901670": ["FG0208-017", "DIFFUSER 150 ML. กลิ่น วนิลา"], "8859757901687": ["FG0208-018", "DIFFUSER 150 ML. กลิ่น ข่า"], "8859757901694": ["FG0208-024", "DIFFUSER 150 ML. กลิ่น สายไหม"], "8859757901700": ["FG0208-025", "DIFFUSER 150 ML. กลิ่น ส้มสีทอง"], "8859757901717": ["FG0208-028", "DIFFUSER 150 ML. กลิ่น เกาะเสม็ด"], "8859757901724": ["FG0208-034", "DIFFUSER 150 ML. กลิ่น ผลไม้มงคล"], "8859757901731": ["FG0208-041", "DIFFUSER 150 ML. กลิ่น Jasmine angel"], "8859757901748": ["FG0208-054", "DIFFUSER 150 ML. กลิ่น Bed Room"], "8859757901762": ["FG0308-058", "ROOM SPRAY 150 ML. กลิ่น Secret tea"], "8859757901779": ["FG0308-059", "ROOM SPRAY 150 ML. กลิ่น Relaxing"], "8859757901786": ["FG0307-059", "ROOM SPRAY 100 ML. กลิ่น Relaxing"], "8859757901793": ["FG0407-060", "BODY OIL 100 ML. กลิ่น Agarwood & Benzoin"], "8859757901816": ["FG0502-001", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ไม้กฤษณากำยาน"], "8859757901830": ["FG0502-010", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น พลับพลึงแพร์"], "8859757901854": ["FG0502-017", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น วนิลา"], "8859757901861": ["FG0502-018", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ข่า"], "8859757901878": ["FG0502-024", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น สายไหม"], "8859757901885": ["FG0502-025", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ส้มสีทอง"], "8859757901892": ["FG0502-034", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ผลไม้มงคล"], "8859757901908": ["FG0502-056", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น Relax"], "8859757901915": ["FG0502-057", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น Ocean day"], "8859757901960": ["FG0605-036", "HAND CREAM 50 ML. กลิ่น Golden mango"], "8859757901977": ["FG0605-060", "HAND CREAM 50 ML. กลิ่น Agarwood & Benzoin"], "8859757901984": ["FG0605-061", "HAND CREAM 50 ML. กลิ่น Lotus blossom"], "8859757901991": ["FG0605-062", "HAND CREAM 50 ML. กลิ่น Cherry & Saffron"], "8859757902004": ["FG0605-084", "HAND CREAM 50 ML. กลิ่น Cave lily & Pear (ห้ามหน่าย)"], "8859757902073": ["FG0805-001", "ถุงหอม 50 ML. กลิ่น ไม้กฤษณากำยาน"], "8859757902455": ["FG0106-104", "EDP 60 ML. กลิ่น Tropcial Oud"], "8859757902462": ["FG0106-105", "EDP 60 ML. Ying Ngam Mueang"], "8859757902479": ["FG0106-106", "EDP 60 ML. Thai Honey Oud"], "8859757902486": ["FG0106-107", "EDP 60 ML. Phayung Oud"], "8859757902493": ["FG0106-108", "EDP 60 ML. Island Oud"], "8859757902509": ["FG0106-196", "EDP 60 ML. Butterfly Oud"], "8859757902547": ["FG0405-060", "BODY OIL 50 ML. กลิ่น Agarwood & Benzoin"], "8859757902752": ["FG0106-043", "EDP 60 ML. กลิ่น Pomelo serein (Resereve)"], "8859757902769": ["FG0106-077", "EDP 60 ML. กลิ่น Ivory Wood"], "8859757902783": ["FG0106-044", "EDP 60 ML. กลิ่น Luscious rose (Resereve)"], "8859757902790": ["FG0106-046", "EDP 60 ML. กลิ่น Sicilian water (Resereve)"], "8859757902806": ["FG0106-047", "EDP 60 ML. กลิ่น Girlish (Resereve)"], "8859757902813": ["FG0106-050", "EDP 60 ML. กลิ่น Aloha (Resereve)"], "8859757902820": ["FG0106-051", "EDP 60 ML. กลิ่น Tom collins (Resereve)"], "8859757902837": ["FG0106-049", "EDP 60 ML. กลิ่น Aphrodisiac (Resereve)"], "8859757902844": ["FG0106-052", "EDP 60 ML. กลิ่น La Lune et moi (Resereve)"], "8859757902851": ["FG0106-053", "EDP 60 ML. กลิ่น Le Soleil et toi (Resereve)"], "8859757902868": ["FG0106-091", "EDP 60 ML. กลิ่น Velvet Blanc (Resereve)"], "8859757902875": ["FG0106-090", "EDP 60 ML. กลิ่น Velvet Noir (Resereve)"], "8859757902882": ["FG0106-103", "EDP 60 ML. กลิ่น Essence of Savile Row (Resereve)"], "8859757902899": ["FG0106-102", "EDP 60 ML. กลิ่น Essence of Naples (Resereve)"], "8859757902905": ["FG0106-101", "EDP 60 ML. กลิ่น Essence of Florence (Resereve)"], "8859757902912": ["FG0106-119", "EDP 60 ML. กลิ่น Ambre Blanc (Resereve)"], "8859757902929": ["FG0102-092", "EDP 10 ML. กลิ่น KALI GIRL"], "8859757902936": ["FG0102-118", "EDP 10 ML. กลิ่น BABY G"], "8859757902943": ["FG0102-093", "EDP 10 ML. กลิ่น HOST BOY"], "8859757902950": ["FG0106-092", "EDP 60 ML. กลิ่น KALI GIRL"], "8859757902967": ["FG0106-118", "EDP 60 ML. กลิ่น BABY G"], "8859757902974": ["FG0106-093", "EDP 60 ML. กลิ่น HOST BOY"], "8859757902981": ["FG0101-092", "EDP 2 ML. กลิ่น Kali Girl"], "8859757902998": ["FG0101-118", "EDP 2 ML. กลิ่น Baby G"], "8859757903001": ["FG0101-093", "EDP 2 ML. กลิ่น HOST BOY"], "8859757903056": ["FG0102-044", "EDP 10 ML. กลิ่น Luscious rose (Resereve)"], "8859757903063": ["FG0102-045", "EDP 10 ML. กลิ่น Ivory wood (Resereve)"], "8859757903070": ["FG0102-052", "EDP 10 ML. กลิ่น La Lune et moi (Resereve)"], "8859757903087": ["FG0102-091", "EDP 10 ML. กลิ่น Velvet Blanc (Resereve)"], "8859757903094": ["FG0102-130", "EDP 10 ML. กลิ่น Ambre Blanc (Resereve)"], "8859757903117": ["FG0106-129", "EDP 60 ML. กลิ่น Ombre Tabac (Resereve)"], "8859757903124": ["FG0101-119", "EDP 2 ML. กลิ่น Ambre Blanc (Resereve)"], "8859757903131": ["FG0101-129", "EDP 2 ML. กลิ่น Ombre Tabac (Resereve)"], "8859757903537": ["FG0102-131", "EDP 10 ML. กลิ่น Coffee Candy"], "8859757903544": ["FG0102-228", "EDP 10 ML. กลิ่น Coffee Candy (ห้ามจำหน่าย)"], "8859757903551": ["FG0102-137", "EDP 10 ML. กลิ่น Cherry Space"], "8859757903575": ["FG0106-131", "EDP 60 ML. กลิ่น Coffee Candy"], "8859757903582": ["FG0106-137", "EDP 60 ML. กลิ่น Cherry Space"], "8859757903827": ["FG0502-113", "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น Butterfly Air"], "8859757904213": ["FG0102-146", "EDP 10 ML. กลิ่น Imperrial Jade Tea*ใหม่"], "8859757904244": ["FG0102-155", "EDP 10 ML. กลิ่น Imperrial Jade Tea (ห้ามจำหน่าย)"], "8859757904381": ["FG0208-041", "DIFFUSER 150 ML. กลิ่น Jasmine angel"], "8859757904480": ["FG0208-194", "DIFFUSER 150 ML. กลิ่น Jasmine angel (ห้ามจำหน่าย)"], "8859757904510": ["FG0106-146", "EDP 60 ML. กลิ่นImperial Jade Tea"], "8859757904602": ["FG0102-140", "EDP 10 ML. กลิ่น Leo"], "8859757904619": ["FG0106-140", "EDP 60 ML. กลิ่น Leo"], "8859757904633": ["FG0102-138", "EDP 10 ML. กลิ่น Kali Girl Award Edition"], "8859757904657": ["FG0113-172", "EDP 3 ML. กลิ่น Kali Girl Award Edition (ห้ามจำหน่าย)"], "8859757904671": ["FG1102-148", "PERFUME OIL 10 ML. กลิ่น Birthday Wish (ห้ามจำหน่าย)"], "8859757904916": ["FG0101-043", "EDP 2 ML. กลิ่น Pomelo serein (Resereve)"], "8859757904923": ["FG0101-046", "EDP 2 ML. กลิ่น Sicilian water (Resereve)"], "8859757904930": ["FG0101-103", "EDP 2 ML. กลิ่น Essence of Savile Row (Resereve)"], "8859757904947": ["FG0101-102", "EDP 2 ML. กลิ่น Essence of Naples (Resereve)"], "8859757904954": ["FG0101-101", "EDP 2 ML. กลิ่น Essence of Florence (Resereve)"], "8859757904961": ["FG0101-053", "EDP 2 ML. กลิ่น Le Soleil et toi (Resereve)"], "8859757904978": ["FG0101-150", "EDP 2 ML. กลิ่น Dian hong (Resereve)"], "8859757904985": ["FG0101-151", "EDP 2 ML. กลิ่น Bai hao (Resereve)"], "8859757904992": ["FG0102-043", "EDP 10 ML. กลิ่น Pomelo serein (Resereve)"], "8859757905005": ["FG0102-051", "EDP 10 ML. กลิ่น Tom collins (Resereve)"], "8859757905012": ["FG0102-047", "EDP 10 ML. กลิ่น Girlish (Resereve)"], "8859757905029": ["FG0102-150", "EDP 10 ML. กลิ่น Dian hong (Resereve)"], "8859757905036": ["FG0102-151", "EDP 10 ML. กลิ่น Bai hao (Resereve)"], "8859757905043": ["FG0106-150", "EDP 60 ML. กลิ่น Dian hong (Resereve)"], "8859757905050": ["FG0106-151", "EDP 60 ML. กลิ่น Bai hao (Resereve)"], "8859757905098": ["FG0307-203", "ROOM SPRAY 100 ML. กลิ่น Relaxing (ห้ามจำหน่าย)"], "8859757905104": ["FG0407-149", "BODY OIL 100 ML. กลิ่น Cork Tree Blossom"], "8859757905111": ["FG0407-092", "BODY OIL 100 ML. กลิ่น Kali Girl"], "8859757905128": ["FG0407-060", "BODY OIL 100 ML. กลิ่น Agarwood & Benzoin"], "8859757905135": ["FG0407-156", "BODY OIL 100 ML. กลิ่น Cork Tree Blossom (ห้ามจำหน่าย)"], "8859757905203": ["FG0101-157", "EDP 2 ML. กลิ่น Smile (ห้ามจำหน่าย)"], "8859757905210": ["FG0102-157", "EDP 10 ML. กลิ่น Smile (ห้ามจำหน่าย)"], "8859757905302": ["FG0101-192", "EDP 2 ML. กลิ่น Full moon party (ห้ามจำหน่าย"], "8859757905579": ["FG0101-198", "EDP 2 ML. กลิ่น LINEN BLANC (Resereve)"], "8859757905586": ["FG0101-197", "EDP 2 ML. กลิ่น COTTON BLANC (Resereve)"], "8859757905593": ["FG0102-198", "EDP 10 ML. กลิ่น LINEN BLANC (Resereve)"], "8859757905609": ["FG0102-197", "EDP 10 ML. กลิ่น COTTON BLANC (Resereve)"], "8859757905616": ["FG0106-198", "EDP 60 ML. กลิ่น LINEN BLANC (Resereve)"], "8859757905623": ["FG0106-197", "EDP 60 ML. กลิ่น COTTON BLANC (Resereve)"], "8859757905647": ["FG0106-138", "EDP 60 ML. กลิ่น Kali Girl Award Edition"]};
+const SKUS = {}; Object.entries(MAP).forEach(([g,v])=>{ if(!SKUS[v[0]]) SKUS[v[0]]=[g,v[1]]; });
+let mode='in', lines=[], scanner=null, running=false, lastScan={code:null,t:0};
+const $=id=>document.getElementById(id);
+$('dt').value = new Date().toLocaleDateString('sv');
+
+function setMode(m){ mode=m;
+  $('mIn').classList.toggle('on',m==='in'); $('mOut').classList.toggle('on',m==='out');
+  $('chRow').style.display = m==='out'?'flex':'none'; save(); }
+
+function beep(ok){ try{ const c=new (window.AudioContext||window.webkitAudioContext)();
+  const o=c.createOscillator(),g=c.createGain(); o.connect(g); g.connect(c.destination);
+  o.frequency.value= ok?1200:300; g.gain.value=.3; o.start(); o.stop(c.currentTime+(ok?.12:.4)); }catch(e){}
+  if(navigator.vibrate) navigator.vibrate(ok?80:[150,80,150]); }
+
+function addCode(code){
+  code=code.trim(); if(!code) return;
+  let gtin=null, sku=null, name=null;
+  if(MAP[code]){ gtin=code; [sku,name]=MAP[code]; }
+  else if(SKUS[code.toUpperCase()]){ sku=code.toUpperCase(); [gtin,name]=SKUS[sku]; }
+  else if(/^\d{8,14}$/.test(code)){ gtin=code; }
+  else { beep(false); show(false,'ไม่รู้จัก: '+code); return; }
+  const key=gtin||sku;
+  const ex=lines.find(l=>l.key===key);
+  if(ex){ ex.qty++; } else lines.push({key,gtin,sku,name,qty:1});
+  beep(!!sku);
+  show(!!sku, sku? (name+' — '+sku) : ('⚠ บาร์โค้ด '+gtin+' ไม่มีในตารางจับคู่ — บันทึกไว้แล้ว ใส่ SKU ทีหลัง'));
+  render(); save();
+}
+function show(ok,msg){ const l=$('last'); l.className='last '+(ok?'ok':'bad'); l.textContent=msg; }
+
+function onScan(text){ const now=Date.now();
+  if(text===lastScan.code && now-lastScan.t<2000) return;
+  lastScan={code:text,t:now}; addCode(text); }
+
+function toggleCam(){
+  if(running){ scanner.stop().then(()=>{running=false;$('cam').textContent='📷 เปิดกล้องสแกน';$('cam').className='btn';}); return; }
+  scanner = scanner || new Html5Qrcode('reader',{formatsToSupport:[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128]});
+  scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:280,height:140}},onScan)
+    .then(()=>{running=true;$('cam').textContent='⏹ ปิดกล้อง';$('cam').className='btn stop';})
+    .catch(e=>alert('เปิดกล้องไม่ได้: '+e+'\n(ต้องเปิดผ่าน https และอนุญาตกล้อง)'));
+}
+function manualAdd(){ addCode($('mb').value); $('mb').value=''; }
+$('mb').addEventListener('keydown',e=>{ if(e.key==='Enter') manualAdd(); });
+
+function render(){
+  $('tb').innerHTML = lines.map((l,i)=>'<tr><td>'+(l.name?l.name:'<span class=warnsku>ไม่รู้จัก</span>')
+   +'<br><small style=color:#888>'+(l.sku||'ใส่ SKU ใน CSV')+(l.gtin?' · '+l.gtin:'')+'</small></td>'
+   +'<td><div class=qty><button onclick=qy('+i+',-1)>−</button><input inputmode=numeric value='+l.qty+' onchange="qv('+i+',this.value)"><button onclick=qy('+i+',1)>+</button></div></td>'
+   +'<td><button class=del onclick=del('+i+')>✕</button></td></tr>').join('');
+  const t=lines.reduce((s,l)=>s+l.qty,0);
+  $('sum').textContent = lines.length+' รายการ / '+t+' ชิ้น'; $('cnt').textContent=lines.length+' รายการ';
+}
+function qy(i,d){ lines[i].qty=Math.max(1,lines[i].qty+d); render(); save(); }
+function qv(i,v){ lines[i].qty=Math.max(1,parseInt(v)||1); render(); save(); }
+function del(i){ const l=lines[i]; if(!confirm('ลบ "'+(l.name||l.sku||l.gtin)+'" ('+l.qty+' ชิ้น)?'))return; lines.splice(i,1); render(); save(); }
+function clearAll(){ if(lines.length&&!confirm('ล้างรายการทั้งหมด?'))return; lines=[]; render(); save(); }
+
+function save(){ localStorage.setItem('btp_scan', JSON.stringify({mode,lines,ch:$('ch').value,dt:$('dt').value})); }
+(function(){ try{ const s=JSON.parse(localStorage.getItem('btp_scan')||'{}');
+  if(s.lines){ lines=s.lines; setMode(s.mode||'in'); if(s.ch)$('ch').value=s.ch; if(s.dt)$('dt').value=s.dt; } }catch(e){} render(); })();
+
+function exportCSV(){
+  if(!lines.length){ alert('ยังไม่มีรายการ'); return; }
+  const d=new Date($('dt').value);
+  const head=['วันที่(1-31)','เดือน(1-12)','ปี(ค.ศ.)','ประเภท','ช่องทาง','SKU','จำนวน','GTIN','ชื่อสินค้า'];
+  const typ= mode==='in'?'รับเข้า':'เบิกออก';
+  const ch= mode==='out'?$('ch').value:'';
+  const rows=lines.map(l=>[d.getDate(),d.getMonth()+1,d.getFullYear(),typ,ch,l.sku||'',l.qty,'\t'+(l.gtin||''),(l.name||'')]);
+  const csv='\uFEFF'+[head,...rows].map(r=>r.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  const f='scan_'+(mode==='in'?'รับเข้า':'เบิกออก'+'_'+ch)+'_'+$('dt').value+'.csv';
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'})); a.download=f; a.click();
+}
+</script>
+</body>
+</html>
