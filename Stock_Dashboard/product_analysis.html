@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>วิเคราะห์สินค้า & กลยุทธ์ — Butterfly Thai Perfume</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--navy:#1F2A44;--blue:#2E5BFF;--green:#16A34A;--orange:#EA580C;--bg:#F4F6FB;--card:#fff;--line:#E5E9F2;--muted:#667085}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,"Noto Sans Thai",sans-serif;background:var(--bg);color:var(--navy);padding:24px;max-width:1240px;margin:auto}
+h1{font-size:23px}h2{font-size:18px;margin:6px 0}
+select{padding:8px 12px;border:1px solid var(--line);border-radius:9px;font-size:14px;font-weight:600;font-family:inherit}
+.head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:18px}
+.muted{color:var(--muted);font-size:13px}
+.grp{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:22px;box-shadow:0 1px 3px rgba(16,24,40,.04)}
+.grp h2{display:flex;align-items:center;gap:10px}
+.tag{font-size:12px;font-weight:700;color:#fff;background:var(--blue);padding:3px 12px;border-radius:99px}
+.kpis{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0 16px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:130px}
+.kpi .l{font-size:12px;color:var(--muted)}.kpi .v{font-size:20px;font-weight:800}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.box{border:1px solid var(--line);border-radius:12px;padding:14px}
+.box h3{font-size:13px;margin-bottom:10px;color:#334155}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px 8px;text-align:right;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child,th.l,td.l{text-align:left}
+thead th{background:#F1F4FA;color:#475467}
+.pill{font-size:11.5px;padding:1px 8px;border-radius:99px;background:#EEF1F7;color:#475467}
+.recs{display:flex;flex-direction:column;gap:8px}
+.rec{background:#F0FDF4;border-left:3px solid var(--green);border-radius:8px;padding:9px 12px}
+.rec.warn{background:#FEF2F2;border-left-color:#DC2626}.rec.info{background:#EFF6FF;border-left-color:var(--blue)}
+.rec .t{font-size:12px;font-weight:700}.rec .s{font-size:12px;color:#475467;margin-top:2px}
+.foot{color:var(--muted);font-size:12px;text-align:center;margin-top:10px}
+canvas{max-height:200px}
+@media(max-width:760px){.row{grid-template-columns:1fr}}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.nav a{text-decoration:none;font-size:13px;font-weight:600;color:#475467;background:var(--card);border:1px solid var(--line);border-radius:99px;padding:8px 14px}
+.nav a.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.nav a:not(.on):hover{border-color:var(--blue);color:var(--blue)}
+</style></head><body>
+<nav class="nav">
+  <a href="stock_dashboard.html">📦 สต็อกคงเหลือ</a>
+  <a href="dashboard.html">📊 เบิก/ขาย</a>
+  <a href="product_analysis.html" class="on">📈 วิเคราะห์สินค้า</a>
+  <a href="scan.html">📷 สแกนสต๊อก</a>
+</nav>
+<div class="head">
+  <div><h1>📈 วิเคราะห์สินค้า & กลยุทธ์</h1>
+    <div class="muted" id="updated"></div>
+    <div class="muted">ขายได้/ไม่ได้ วัดจากยอดขายจริง (฿) · แยก 10ml / 60ml / อื่นๆ · มุมแพลตฟอร์ม + มุมคลัง</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px"><span class="muted">เลือกเดือน</span><select id="monthSel"></select></div>
+</div>
+<div id="groups"></div>
+<div class="foot" id="foot"></div>
+<script>
+const D={"generated": "15 มิ.ย. 2569 เวลา 14:56 น.", "months": [{"key": "2569-06", "label": "มิ.ย. 2569", "groups": [{"name": "10 ML", "totalSales": 0, "soldCount": 0, "deadCount": 59, "platLabels": ["TikTok", "Lazada", "Shopee", "365"], "platData": [0, 0, 0, 0], "chanLabels": ["Shop", "Online", "Dealer"], "chanData": [0, 0, 0], "top": [], "dead": [{"sku": "FG0102-010", "desc": "EDP 10 ML. กลิ่น Cave Lily & Pear -พลับพลึงแ", "rem": 3006}, {"sku": "FG0102-001", "desc": "EDP 10 ML. กลิ่น Agawood & Benzoin ไม้กฤษณาก", "rem": 2557}, {"sku": "FG0102-092", "desc": "EDP 10 ML. กลิ่น KALI GIRL", "rem": 2089}, {"sku": "FG0102-030", "desc": "EDP 10 ML. กลิ่น Petrichor-ฝนแรก", "rem": 1991}, {"sku": "FG0102-008", "desc": "EDP 10 ML. กลิ่น Vetiver Rose-แฝกหอมกุหลาบ", "rem": 1959}, {"sku": "FG0102-027", "desc": "EDP 10 ML. กลิ่น Golden Apple-ลูกจันทร์", "rem": 1815}, {"sku": "FG0102-007", "desc": "EDP 10 ML. กลิ่น Damask Rose-กุหลาบมอญ", "rem": 1813}, {"sku": "FG0102-003", "desc": "EDP 10 ML. กลิ่น บัวหลวง", "rem": 1766}, {"sku": "FG0102-138", "desc": "EDP 10 ML. กลิ่น Kali Girl Award Edition", "rem": 1636}, {"sku": "FG0102-004", "desc": "EDP 10 ML. กลิ่น ดอกปีบ", "rem": 1292}, {"sku": "FG0102-118", "desc": "EDP 10 ML. กลิ่น BABY G", "rem": 1051}, {"sku": "FG0102-018", "desc": "EDP 10 ML. กลิ่น Galanga-ข่า", "rem": 836}, {"sku": "FG0102-014", "desc": "EDP 10 ML. กลิ่น Pomelo-ส้มโอ", "rem": 605}, {"sku": "FG0102-016", "desc": "EDP 10 ML. กลิ่น Mango Sticky Rice-ข้าวเหนีย", "rem": 558}, {"sku": "FG0102-013", "desc": "EDP 10 ML. กลิ่น Bergamot & Clove Bud-มะกรูด", "rem": 501}], "recs": [{"t": "ยังไม่มียอดขาย", "s": "กลุ่มนี้ยังไม่มีรายการขายออนไลน์ในเดือนนี้ — พิจารณาเปิดการขาย/ทำโปร"}, {"t": "ของไม่เคลื่อนไหว", "s": "59 รายการมีสต็อกแต่ไม่ถูกเบิกเลยเดือนนี้ (รวม ~34,888 ชิ้น) — จัดโปรล้างสต็อก/โยกช่องทาง"}]}, {"name": "60 ML", "totalSales": 0, "soldCount": 0, "deadCount": 64, "platLabels": ["TikTok", "Lazada", "Shopee", "365"], "platData": [0, 0, 0, 0], "chanLabels": ["Shop", "Online", "Dealer"], "chanData": [0, 0, 0], "top": [], "dead": [{"sku": "FG0106-001", "desc": "EDP 60 ML. กลิ่น Agarwood & Benzoin-ไม้กฤษณา", "rem": 1352}, {"sku": "FG0106-092", "desc": "EDP 60 ML. กลิ่น KALI GIRL", "rem": 949}, {"sku": "FG0106-138", "desc": "EDP 60 ML. กลิ่น Kali Girl Award Edition", "rem": 917}, {"sku": "FG0106-010", "desc": "EDP 60 ML. กลิ่น Cave Lily & Pear-พลับพลึงแพ", "rem": 791}, {"sku": "FG0106-030", "desc": "EDP 60 ML. กลิ่น Petrichor-ฝนแรก", "rem": 445}, {"sku": "FG0106-118", "desc": "EDP 60 ML. กลิ่น BABY G", "rem": 375}, {"sku": "FG0106-027", "desc": "EDP 60 ML. กลิ่น Golden Apple-ลูกจันทร์", "rem": 320}, {"sku": "FG0106-018", "desc": "EDP 60 ML. กลิ่น Galanga-ข่า", "rem": 317}, {"sku": "FG0106-003", "desc": "EDP 60 ML. กลิ่น Lotus Blossom-บัวหลวง", "rem": 301}, {"sku": "FG0106-119", "desc": "EDP 60 ML. กลิ่น Ambre Blanc (Resereve)", "rem": 295}, {"sku": "FG0106-007", "desc": "EDP 60 ML. กลิ่น Damask Rose-กุหลาบมอญ", "rem": 283}, {"sku": "FG0106-008", "desc": "EDP 60 ML. กลิ่น Vitiver Rose-แฝกหอมกุหลาบ", "rem": 282}, {"sku": "FG0106-004", "desc": "EDP 60 ML. กลิ่น Cork Tree Blossom-ดอกปีบ", "rem": 280}, {"sku": "FG0106-150", "desc": "EDP 60 ML. กลิ่น Dian hong (Resereve)", "rem": 237}, {"sku": "FG0106-198", "desc": "EDP 60 ML. กลิ่น LINEN BLANC (Resereve)", "rem": 234}], "recs": [{"t": "ยังไม่มียอดขาย", "s": "กลุ่มนี้ยังไม่มีรายการขายออนไลน์ในเดือนนี้ — พิจารณาเปิดการขาย/ทำโปร"}, {"t": "ของไม่เคลื่อนไหว", "s": "64 รายการมีสต็อกแต่ไม่ถูกเบิกเลยเดือนนี้ (รวม ~12,491 ชิ้น) — จัดโปรล้างสต็อก/โยกช่องทาง"}]}, {"name": "อื่นๆ", "totalSales": 0, "soldCount": 0, "deadCount": 107, "platLabels": ["TikTok", "Lazada", "Shopee", "365"], "platData": [0, 0, 0, 0], "chanLabels": ["Shop", "Online", "Dealer"], "chanData": [0, 0, 0], "top": [], "dead": [{"sku": "FG0101-157", "desc": "EDP 2 ML. กลิ่น Smile (ห้ามจำหน่าย)", "rem": 6267}, {"sku": "FG1215-176", "desc": "Body oil Kali Girl 5 ML. (ห้ามจำหน่าย)", "rem": 6042}, {"sku": "FG1215-132", "desc": "Body oil Gliter Glowie wink 5 ML.(ห้ามจำหน่า", "rem": 3000}, {"sku": "FG0101-192", "desc": "EDP 2 ML. กลิ่น Full moon party (ห้ามจำหน่าย", "rem": 2000}, {"sku": "FG0101-118", "desc": "EDP 2 ML. กลิ่น Baby G", "rem": 1347}, {"sku": "FG0101-001", "desc": "EDP 2 ML. กลิ่น ไม้กฤษณากำยาน", "rem": 1258}, {"sku": "FG1402-060", "desc": "ESSENTIAL OIL 10 ML. กลิ่น Agarwood & Benzoi", "rem": 1060}, {"sku": "FG0101-010", "desc": "EDP 2 ML. กลิ่น พลับพลึงแพร์", "rem": 924}, {"sku": "FG0101-169", "desc": "EDP 2 ML. กลิ่น กุหลาบมอญ (ห้ามจำหน่าย)", "rem": 841}, {"sku": "FG0502-001", "desc": "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ไม้ก", "rem": 833}, {"sku": "FG0502-010", "desc": "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น พลับ", "rem": 715}, {"sku": "FG0405-167", "desc": "BODY OIL  50 ML. กลิ่น Agarwood & Benzoin (ห", "rem": 686}, {"sku": "FG1102-148", "desc": "PERFUME OIL 10 ML. กลิ่น Birthday Wish (ห้าม", "rem": 500}, {"sku": "FG0101-119", "desc": "EDP 2 ML. กลิ่น Ambre Blanc (Resereve)", "rem": 491}, {"sku": "FG0502-018", "desc": "น้ำหอมปรับอากาศเอนกประสงค์ 10 ML. กลิ่น ข่า", "rem": 440}], "recs": [{"t": "ยังไม่มียอดขาย", "s": "กลุ่มนี้ยังไม่มีรายการขายออนไลน์ในเดือนนี้ — พิจารณาเปิดการขาย/ทำโปร"}, {"t": "ของไม่เคลื่อนไหว", "s": "107 รายการมีสต็อกแต่ไม่ถูกเบิกเลยเดือนนี้ (รวม ~38,197 ชิ้น) — จัดโปรล้างสต็อก/โยกช่องทาง"}]}]}], "defaultKey": "2569-06"};
+const nf=n=>Number(n||0).toLocaleString('en-US');
+const PLATC=['#e94560','#9334e6','#fb8c00','#0f3460'];
+const CHANC=['#16A34A','#EA580C','#2E5BFF'];
+const charts={};
+function mk(id,cfg){try{if(charts[id])charts[id].destroy();var el=document.getElementById(id);if(el)charts[id]=new Chart(el,cfg);}catch(e){console.error(id,e);}}
+let M=null;
+const sel=document.getElementById('monthSel');
+sel.innerHTML=D.months.map(m=>`<option value="${m.key}">${m.label}</option>`).join('');
+sel.value=D.defaultKey;
+sel.onchange=()=>{M=D.months.find(x=>x.key===sel.value);render();};
+{const e=document.getElementById('updated');if(e)e.textContent=`🕒 อัปเดตล่าสุด: ${D.generated}`;}
+
+function render(){
+  const wrap=document.getElementById('groups'); wrap.innerHTML='';
+  M.groups.forEach((g,gi)=>{
+    const sold=g.top.map((r,i)=>`<tr><td>${i+1}</td><td class="l">${r.n}</td><td><span class="pill">${r.plat}</span></td><td>${nf(r.qty)}</td><td style="font-weight:700">฿${nf(r.val)}</td></tr>`).join('')||'<tr><td colspan="5" style="color:#aaa">— ไม่มียอดขาย —</td></tr>';
+    const dead=g.dead.map(r=>`<tr><td class="l">${r.sku}</td><td class="l">${r.desc}</td><td style="font-weight:700;color:#DC2626">${nf(r.rem)}</td></tr>`).join('')||'<tr><td colspan="3" style="color:#16A34A">— ไม่มีของค้าง —</td></tr>';
+    const recs=g.recs.map(r=>{const cls=r.t.includes('ไม่เคลื่อนไหว')||r.t.includes('ยังไม่มี')?'warn':(r.t.includes('ว่าง')?'info':'');return `<div class="rec ${cls}"><div class="t">💡 ${r.t}</div><div class="s">${r.s}</div></div>`;}).join('');
+    wrap.insertAdjacentHTML('beforeend',`
+    <div class="grp">
+      <h2><span class="tag">${g.name}</span> ภาพรวมกลุ่ม</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="l">ยอดขายรวม (฿)</div><div class="v" style="color:var(--green)">฿${nf(g.totalSales)}</div></div>
+        <div class="kpi"><div class="l">รายการที่ขายได้</div><div class="v" style="color:var(--blue)">${nf(g.soldCount)}</div></div>
+        <div class="kpi"><div class="l">ของไม่เคลื่อนไหว</div><div class="v" style="color:var(--orange)">${nf(g.deadCount)}</div></div>
+      </div>
+      <div class="row">
+        <div class="box"><h3>ยอดขาย (฿) แยกแพลตฟอร์ม</h3><canvas id="pf${gi}"></canvas></div>
+        <div class="box"><h3>เบิกออกจากคลัง (ชิ้น) แยกช่องทาง</h3><canvas id="ch${gi}"></canvas></div>
+      </div>
+      <div class="row">
+        <div class="box"><h3>🏆 สินค้าขายได้ดี (ตามยอด ฿)</h3><table><thead><tr><th>#</th><th class="l">สินค้า</th><th class="l">ช่องทาง</th><th>ชิ้น</th><th>฿</th></tr></thead><tbody>${sold}</tbody></table></div>
+        <div class="box"><h3>🐌 ของในคลังที่ไม่เคลื่อนไหวเดือนนี้</h3><table><thead><tr><th class="l">รหัส</th><th class="l">รายละเอียด</th><th>คงเหลือ</th></tr></thead><tbody>${dead}</tbody></table></div>
+      </div>
+      <div class="box"><h3>คำแนะนำ & กลยุทธ์</h3><div class="recs">${recs}</div></div>
+    </div>`);
+    mk('pf'+gi,{type:'bar',data:{labels:g.platLabels,datasets:[{data:g.platData,backgroundColor:PLATC,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>' ฿'+c.parsed.y.toLocaleString()}}},scales:{y:{ticks:{callback:v=>'฿'+(v/1000)+'k'}}}}});
+    mk('ch'+gi,{type:'bar',data:{labels:g.chanLabels,datasets:[{data:g.chanData,backgroundColor:CHANC,borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>v.toLocaleString()}}}}});
+  });
+  document.getElementById('foot').textContent=`สร้างเมื่อ ${D.generated} • ${M.label}`;
+}
+M=D.months.find(x=>x.key===D.defaultKey)||D.months[0];
+render();
+</script></body></html>
