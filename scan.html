@@ -416,7 +416,7 @@ function onScan(text){ const now=Date.now();
 
 function toggleCam(){
   if(running){ scanner.stop().then(()=>{running=false;$('cam').textContent='📷 เปิดกล้องสแกน';$('cam').className='btn';}); return; }
-  scanner = scanner || new Html5Qrcode('reader',{formatsToSupport:[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128]});
+  scanner = scanner || new Html5Qrcode('reader',{formatsToSupport:[Html5QrcodeSupportedFormats.EAN_13,Html5QrcodeSupportedFormats.EAN_8,Html5QrcodeSupportedFormats.CODE_128,Html5QrcodeSupportedFormats.QR_CODE]});
   scanner.start({facingMode:'environment'},{fps:10,qrbox:{width:280,height:140}},onScan)
     .then(()=>{running=true;$('cam').textContent='⏹ ปิดกล้อง';$('cam').className='btn stop';})
     .catch(e=>alert('เปิดกล้องไม่ได้: '+e+'\n(ต้องเปิดผ่าน https และอนุญาตกล้อง)'));
